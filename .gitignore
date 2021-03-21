@@ -1,0 +1,15 @@
+/.classpath
+*.jar
+/target
+.settings
+# Default ignored files
+/shelf/
+/workspace.xml
+# Datasource local storage ignored files
+/../../../../../../../../../:\Users\giuli\Desktop\poli a distancia\2020(2021)_segundo_periodo\Backend\prueba\.idea/dataSources/
+/dataSources.local.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+.project
+.idea
+
