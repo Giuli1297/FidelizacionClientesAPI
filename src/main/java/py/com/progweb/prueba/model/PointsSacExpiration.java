@@ -1,18 +1,23 @@
 package py.com.progweb.prueba.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import py.com.progweb.prueba.persistence.PointsSacExpirationDAO;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Data
+@NoArgsConstructor(access = AccessLevel.PUBLIC, force = true)
 @Table(name = "VencimientoDePuntos")
 public class PointsSacExpiration {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "vencimiento_id")
-    private Long expiration_id;
+    private Long pointsSacExpirationId;
 
     @Column(name = "fecha_de_inicio")
     private Date initDate;
@@ -23,8 +28,14 @@ public class PointsSacExpiration {
     @Column(name = "duracion_dias")
     private Long dayDuration;
 
-    @OneToOne(cascade = {CascadeType.ALL})
+    @OneToOne(optional = false)
     @JoinColumn(name = "bolsa_puntos_id")
+    @JsonBackReference("vencimiento-bolsa")
     private PointsSac pointsSac;
 
+    public PointsSacExpiration(Date initDate, Date expirationDate, PointsSac pointsSac){
+        this.initDate=initDate;
+        this.expirationDate=expirationDate;
+        this.pointsSac=pointsSac;
+    }
 }

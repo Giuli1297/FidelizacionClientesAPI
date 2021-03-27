@@ -1,8 +1,11 @@
 package py.com.progweb.prueba.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.sun.istack.Nullable;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -40,9 +43,11 @@ public class Client {
     private Date birthday;
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
-    private List<PointsSac> pointsSacList;
+    @JsonManagedReference(value="bolsa-cliente")
+    private List<PointsSac> pointsSacList = null;
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
-    private List<PointsUse> pointsUseList;
+    @JsonManagedReference(value = "usodepuntos-cliente")
+    private List<PointsUse> pointsUseList = null;
 
 }

@@ -1,8 +1,10 @@
 package py.com.progweb.prueba.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -21,5 +23,6 @@ public class UseConcept {
     private Long requiredPoints;
 
     @OneToMany(mappedBy = "useConcept")
-    private List<PointsUse> pointsUseList;
+    @JsonManagedReference(value = "usodepuntos-conceptodeuso")
+    private List<PointsUse> pointsUseList = null;
 }

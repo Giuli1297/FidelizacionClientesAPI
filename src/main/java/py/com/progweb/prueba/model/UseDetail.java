@@ -1,5 +1,6 @@
 package py.com.progweb.prueba.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -16,11 +17,13 @@ public class UseDetail {
     @Column(name = "puntos_usados")
     private Long usedPoints;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "bolsa_id")
+    @JsonBackReference(value = "detalle-bolsa")
     private PointsSac pointsSac;
 
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @ManyToOne(optional = false)
     @JoinColumn(name = "uso_puntos_id")
+    @JsonBackReference(value = "detalle-usodepuntos")
     private PointsUse pointsUse;
 }

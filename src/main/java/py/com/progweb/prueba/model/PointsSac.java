@@ -1,8 +1,11 @@
 package py.com.progweb.prueba.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -37,13 +40,20 @@ public class PointsSac {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "cliente_id")
+    @JsonBackReference(value = "bolsa-cliente")
     private Client client;
 
     @OneToMany(mappedBy = "pointsSac")
-    private List<UseDetail> useDetailList;
+    @JsonManagedReference(value="detalle-bolsa")
+    private List<UseDetail> useDetailList = null;
+
+    @OneToOne(mappedBy = "pointsSac", cascade = { CascadeType.ALL })
+    @JsonManagedReference("vencimiento-bolsa")
+    private PointsSacExpiration pointsSacExpiration;
+
 
     @PrePersist
-    void Dates(){
+    void datesAndBalance(){
         Date today = new Date();
         this.assignDate = today;
 
@@ -53,6 +63,10 @@ public class PointsSac {
         Date expDate = c.getTime();
 
         this.expirationDate = expDate;
+        if(this.usedPoints==null){
+            this.usedPoints=0L;
+        }
+        this.balance = this.assignedPoints - this.usedPoints;
     }
 
 }
