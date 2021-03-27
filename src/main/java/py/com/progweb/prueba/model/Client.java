@@ -40,6 +40,7 @@ public class Client {
     private String phone;
 
     @Column(name = "fecha_de_nacimiento")
+    @Temporal(TemporalType.DATE)
     private Date birthday;
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)

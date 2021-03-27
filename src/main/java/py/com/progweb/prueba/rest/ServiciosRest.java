@@ -40,7 +40,7 @@ public class ServiciosRest {
     public Response cargar(@QueryParam("clienteId") Long clienteId, @QueryParam("montoDeLaOperacion") Double amount){
         PointsSac pointsSac = new PointsSac();
         pointsSac.setClient(this.clientDAO.getClient(clienteId));
-        pointsSac.setAssignedPoints(calculatePoints(amount));
+        pointsSac.setAssignedPoints(pointsSacDAO.calculatePoints(amount));
         pointsSac.setPurchaseAmount(amount);
         Long id = pointsSacDAO.addPSac(pointsSac);
         return Response.ok(pointsSacDAO.getPointsSac(id)).build();
@@ -53,7 +53,7 @@ public class ServiciosRest {
         //Obtener cantidad de puntos requeridos
         Long requiredPoints = useConceptDAO.getUseConcept(conceptoId).getRequiredPoints();
         //Obtener una lista ordenada por fecha ascendente de bolsas de puntos del cliente
-        List<PointsSac> pointsSacList = pointsSacDAO.customQuery(clienteId);
+        List<PointsSac> pointsSacList = pointsSacDAO.listWhereClienteOrderByDate(clienteId);
         //Descontar los puntos necesarios de las bolsas en orde secuencial y crear un uso de puntos
         for(PointsSac pointsSac : pointsSacList){
             pointsCounter =+ pointsSac.getBalance();
@@ -71,6 +71,9 @@ public class ServiciosRest {
         Long pointsUseId = pointsUseDAO.createPointsUse(pointsUse);
         for(PointsSac pointsSac : pointsSacList){
             Long avaiblePoints = pointsSac.getBalance();
+            if(avaiblePoints<=0){
+                continue;
+            }
             if(avaiblePoints<requiredPoints){
                 System.out.println("rp "+requiredPoints+" ba "+avaiblePoints);
                 requiredPoints = requiredPoints - avaiblePoints;
@@ -99,7 +102,7 @@ public class ServiciosRest {
         return Response.ok(pointsUseDAO.getPointsUse(pointsUseId)).build();
     }
 
-    private Long calculatePoints(Double operationAmount){
+    /*public Long calculatePoints(Double operationAmount){
         long points;
         if(operationAmount <= 199999){
             operationAmount = operationAmount / 50000;
@@ -112,5 +115,5 @@ public class ServiciosRest {
             points = operationAmount.longValue();
         }
         return points;
-    }
+    }*/
 }

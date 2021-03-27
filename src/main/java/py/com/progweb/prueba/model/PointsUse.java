@@ -21,6 +21,7 @@ public class PointsUse {
     private Long usedPoints;
 
     @Column(name = "fecha_uso")
+    @Temporal(TemporalType.DATE)
     private Date useDate;
 
     @ManyToOne(optional = false)

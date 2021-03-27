@@ -1,13 +1,13 @@
 package py.com.progweb.prueba.persistence;
 
+import py.com.progweb.prueba.model.PointsSac;
 import py.com.progweb.prueba.model.PointsUse;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 @Stateless
@@ -34,6 +34,15 @@ public class PointsUseDAO {
         if(entityManager.find(PointsUse.class, pointsUse.getPointsUseId()) != null){
             entityManager.merge(pointsUse);
         }
+    }
+
+    public List<PointsUse> listByConceptAndDateAndClient(Long idConcept, Date useDate, Long idClient){
+        Query q = this.entityManager.createQuery(
+                "select c from PointsUse c where c.useConcept.useConceptId = :idConcept and date(c.useDate)=:useDate and c.client.clientId=:clientId")
+                .setParameter("idConcept", idConcept)
+                .setParameter("useDate", useDate, TemporalType.DATE)
+                .setParameter("clientId", idClient);
+        return (List<PointsUse>) q.getResultList();
     }
 
     public void deletePointsUse(PointsUse pointsUse){

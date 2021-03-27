@@ -45,9 +45,26 @@ public class PointsSacDAO {
         }
     }
 
-    public List<PointsSac> customQuery(Long client){
-        Query q = this.entityManager.createQuery("select c from PointsSac c where c.client.clientId = :client ORDER BY c.assignDate")
+    public List<PointsSac> listWhereClienteOrderByDate(Long client){
+        Query q = this.entityManager
+                .createQuery("select c from PointsSac c where c.client.clientId = :client ORDER BY c.assignDate")
                 .setParameter("client", client);
+        return (List<PointsSac>) q.getResultList();
+    }
+
+    public List<PointsSac> listByClientAndRange(Long clientId, Long infRange, Long supRange){
+        Query q = this.entityManager
+                .createQuery("SELECT s from PointsSac s WHERE s.client.clientId=:clientId and s.balance BETWEEN :inf and :sup")
+                .setParameter("clientId", clientId)
+                .setParameter("inf", infRange)
+                .setParameter("sup", supRange);
+        return (List<PointsSac>) q.getResultList();
+    }
+
+    public List<PointsSac> listByDaysForExpiration(Long days){
+        Query q = this.entityManager
+                .createQuery("SELECT s from PointsSac s WHERE s.pointsSacExpiration.dayDuration = :days")
+                .setParameter("days", days);
         return (List<PointsSac>) q.getResultList();
     }
 
@@ -55,5 +72,19 @@ public class PointsSacDAO {
         entityManager.remove(pointsSac);
     }
 
+    public Long calculatePoints(Double operationAmount) {
+        long points;
+        if (operationAmount <= 199999) {
+            operationAmount = operationAmount / 50000;
+            points = operationAmount.longValue();
+        } else if (operationAmount <= 499999) {
+            operationAmount = operationAmount / 30000;
+            points = operationAmount.longValue();
+        } else {
+            operationAmount = operationAmount / 20000;
+            points = operationAmount.longValue();
+        }
+        return points;
+    }
 }
 

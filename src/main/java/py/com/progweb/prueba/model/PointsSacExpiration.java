@@ -28,7 +28,7 @@ public class PointsSacExpiration {
     @Column(name = "duracion_dias")
     private Long dayDuration;
 
-    @OneToOne(optional = false)
+    @OneToOne(optional = false, cascade = { CascadeType.REMOVE })
     @JoinColumn(name = "bolsa_puntos_id")
     @JsonBackReference("vencimiento-bolsa")
     private PointsSac pointsSac;
@@ -37,5 +37,11 @@ public class PointsSacExpiration {
         this.initDate=initDate;
         this.expirationDate=expirationDate;
         this.pointsSac=pointsSac;
+    }
+
+    @PrePersist
+    void days(){
+        Date current = new Date();
+        this.dayDuration = (Long) ((expirationDate.getTime() - current.getTime()) / (1000 * 60 * 60 * 24));
     }
 }
