@@ -1,9 +1,6 @@
 package py.com.progweb.prueba.rest;
 
-import py.com.progweb.prueba.model.PointsSac;
-import py.com.progweb.prueba.model.PointsUse;
-import py.com.progweb.prueba.model.UseConcept;
-import py.com.progweb.prueba.model.UseDetail;
+import py.com.progweb.prueba.model.*;
 import py.com.progweb.prueba.persistence.*;
 
 import javax.ejb.Stateless;
@@ -39,6 +36,13 @@ public class ServiciosRest {
     @Path("/cargar")
     public Response cargar(@QueryParam("clienteId") Long clienteId, @QueryParam("montoDeLaOperacion") Double amount){
         PointsSac pointsSac = new PointsSac();
+        Client client = this.clientDAO.getClient(clienteId);
+        if(client==null){
+            return Response.status(404).build();
+        }
+        if(pointsSacDAO.calculatePoints(amount)<=0){
+            return Response.ok("Monto de operacion muy pequeno para generar puntos").build();
+        }
         pointsSac.setClient(this.clientDAO.getClient(clienteId));
         pointsSac.setAssignedPoints(pointsSacDAO.calculatePoints(amount));
         pointsSac.setPurchaseAmount(amount);
@@ -49,12 +53,15 @@ public class ServiciosRest {
     @POST
     @Path("/canjear")
     public Response canjear(@QueryParam("clienteId") Long clienteId, @QueryParam("conceptoId") Long conceptoId){
-        Long pointsCounter = 0L;
-        //Obtener cantidad de puntos requeridos
-        Long requiredPoints = useConceptDAO.getUseConcept(conceptoId).getRequiredPoints();
-        //Obtener una lista ordenada por fecha ascendente de bolsas de puntos del cliente
+        UseConcept concept = useConceptDAO.getUseConcept(conceptoId);
+        Client client = clientDAO.getClient(clienteId);
+        if(client==null || concept == null){
+            return Response.status(404).build();
+        }
+
+        Long requiredPoints = concept.getRequiredPoints();
         List<PointsSac> pointsSacList = pointsSacDAO.listWhereClienteOrderByDate(clienteId);
-        //Descontar los puntos necesarios de las bolsas en orde secuencial y crear un uso de puntos
+        Long pointsCounter = 0L;
         for(PointsSac pointsSac : pointsSacList){
             pointsCounter =+ pointsSac.getBalance();
             if(pointsCounter >= requiredPoints){
@@ -62,7 +69,9 @@ public class ServiciosRest {
             }
         }
         if(pointsCounter < requiredPoints){
-            return Response.notModified(""+pointsCounter+" "+requiredPoints).build();
+            return Response
+                    .notModified("Puntos Del Cliente "+pointsCounter+" \nPuntos Requeridos "+requiredPoints)
+                    .build();
         }
         PointsUse pointsUse = new PointsUse();
         pointsUse.setUsedPoints(requiredPoints);
@@ -75,9 +84,7 @@ public class ServiciosRest {
                 continue;
             }
             if(avaiblePoints<requiredPoints){
-                System.out.println("rp "+requiredPoints+" ba "+avaiblePoints);
                 requiredPoints = requiredPoints - avaiblePoints;
-                System.out.println("rp "+requiredPoints+" ba "+avaiblePoints);
                 UseDetail detail = new UseDetail();
                 detail.setPointsSac(pointsSac);
                 detail.setUsedPoints(avaiblePoints);
@@ -87,7 +94,6 @@ public class ServiciosRest {
                 pointsSac.setUsedPoints(pointsSac.getAssignedPoints());
                 pointsSacDAO.updatePointsSac(pointsSac);
             }else{
-                System.out.println("rp "+requiredPoints+" ba "+avaiblePoints);
                 UseDetail detail = new UseDetail();
                 detail.setPointsSac(pointsSac);
                 detail.setUsedPoints(requiredPoints);
@@ -102,18 +108,4 @@ public class ServiciosRest {
         return Response.ok(pointsUseDAO.getPointsUse(pointsUseId)).build();
     }
 
-    /*public Long calculatePoints(Double operationAmount){
-        long points;
-        if(operationAmount <= 199999){
-            operationAmount = operationAmount / 50000;
-            points = operationAmount.longValue();
-        }else if(operationAmount <= 499999){
-            operationAmount = operationAmount / 30000;
-            points = operationAmount.longValue();
-        }else{
-            operationAmount = operationAmount / 20000;
-            points = operationAmount.longValue();
-        }
-        return points;
-    }*/
 }

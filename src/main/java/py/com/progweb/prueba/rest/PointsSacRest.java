@@ -1,5 +1,6 @@
 package py.com.progweb.prueba.rest;
 
+import py.com.progweb.prueba.model.Client;
 import py.com.progweb.prueba.model.PointsSac;
 import py.com.progweb.prueba.model.PointsSac;
 import py.com.progweb.prueba.persistence.ClientDAO;
@@ -44,7 +45,11 @@ public class PointsSacRest {
     @PUT
     @Path("/")
     public Response crear(@QueryParam("cliente") Long clientId, PointsSac pointsSac) throws URISyntaxException {
-        pointsSac.setClient(this.clientDAO.getClient(clientId));
+        Client client = this.clientDAO.getClient(clientId);
+        if(client == null){
+            return Response.status(404).build();
+        }
+        pointsSac.setClient(client);
         Long id = this.pointsSacDAO.addPSac(pointsSac);
         return Response.created(UriBuilder
                 .fromResource(PointsSacRest.class)
@@ -62,7 +67,11 @@ public class PointsSacRest {
     @DELETE
     @Path("/{pointsSacId}")
     public Response deletePointsSac(@PathParam("pointsSacId") Long pointsSacId){
-        this.pointsSacDAO.deletePointsSac(this.pointsSacDAO.getPointsSac(pointsSacId));
+        PointsSac pointsSac = this.pointsSacDAO.getPointsSac(pointsSacId);
+        if(pointsSac == null){
+            return Response.status(404).build();
+        }
+        this.pointsSacDAO.deletePointsSac(pointsSac);
         return Response.ok().build();
     }
 }

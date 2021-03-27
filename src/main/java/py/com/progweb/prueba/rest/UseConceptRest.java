@@ -57,7 +57,11 @@ public class UseConceptRest {
     @DELETE
     @Path("/{useConceptId}")
     public Response deleteClient(@PathParam("useConceptId") Long useConceptId){
-        this.useConceptDAO.deleteUseConcept(this.useConceptDAO.getUseConcept(useConceptId));
+        UseConcept useConcept = this.useConceptDAO.getUseConcept(useConceptId);
+        if(useConcept==null){
+            return Response.status(400).build();
+        }
+        this.useConceptDAO.deleteUseConcept(useConcept);
         return Response.ok().build();
     }
 }

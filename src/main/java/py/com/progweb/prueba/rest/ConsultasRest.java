@@ -43,9 +43,14 @@ public class ConsultasRest {
     public Response listarUsoDePuntos(
             @QueryParam("conceptoDeUso") Long idConcepto,
             @QueryParam("fechaDeUso") String fechaUso,
-            @QueryParam("cliente") Long idCliente) throws ParseException {
+            @QueryParam("cliente") Long idCliente) {
         SimpleDateFormat myFormat = new SimpleDateFormat("dd-MM-yyyy");
-        Date fecha = myFormat.parse(fechaUso);
+        Date fecha = null;
+        try {
+            fecha = myFormat.parse(fechaUso);
+        } catch (ParseException e) {
+            return Response.status(400).build();
+        }
         List<PointsUse> pointsUseList = pointsUseDAO.listByConceptAndDateAndClient(idConcepto, fecha, idCliente);
         return Response.ok(pointsUseList).build();
     }
@@ -56,6 +61,9 @@ public class ConsultasRest {
             @QueryParam("cliente") Long clientId,
             @QueryParam("puntosRangoInf") Long rangInf,
             @QueryParam("puntosRangoSup") Long rangSup){
+        if(rangInf > rangSup){
+            return Response.status(400).build();
+        }
         List<PointsSac> pointsSacList = pointsSacDAO.listByClientAndRange(clientId, rangInf, rangSup);
         return Response.ok(pointsSacList).build();
     }
@@ -63,6 +71,9 @@ public class ConsultasRest {
     @GET
     @Path("/listarClientesConPuntosAVencer")
     public Response listarClientesPuntosAVencer(@QueryParam("xDias") Long xDias){
+        if(xDias<0){
+            return Response.status(400).build();
+        }
         List<PointsSac> pointsSacList = pointsSacDAO.listByDaysForExpiration(xDias);
         List<Client> clients = new ArrayList<Client>();
         for(PointsSac pointsSac : pointsSacList){
@@ -79,9 +90,14 @@ public class ConsultasRest {
     public Response listarClientesNombreApellidoNacimiento(
             @QueryParam("nombre") String name,
             @QueryParam("apellido") String lastname,
-            @QueryParam("nacimiento") String birthday) throws ParseException {
+            @QueryParam("nacimiento") String birthday){
         SimpleDateFormat myFormat = new SimpleDateFormat("dd-MM-yyyy");
-        Date fecha = myFormat.parse(birthday);
+        Date fecha = null;
+        try {
+            fecha = myFormat.parse(birthday);
+        } catch (ParseException e) {
+            return Response.status(400).build();
+        }
         List<Client> clients = clientDAO.listByNameOrLastnameOrBirthday(name, lastname, fecha);
         return Response.ok(clients).build();
     }

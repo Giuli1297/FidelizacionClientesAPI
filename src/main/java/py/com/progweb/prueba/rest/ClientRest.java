@@ -50,7 +50,7 @@ public class ClientRest {
     }
 
     @POST
-    @Path("/update/{clientId}")
+    @Path("/update")
     public Response updateClient(Client client){
         this.clientDAO.updateClient(client);
         return Response.ok().build();
@@ -59,7 +59,11 @@ public class ClientRest {
     @DELETE
     @Path("/{clientId}")
     public Response deleteClient(@PathParam("clientId") Long clientId){
-        this.clientDAO.deleteClient(this.clientDAO.getClient(clientId));
+        Client client = clientDAO.getClient(clientId);
+        if(client == null){
+            return Response.status(404).build();
+        }
+        this.clientDAO.deleteClient(client);
         return Response.ok().build();
     }
 

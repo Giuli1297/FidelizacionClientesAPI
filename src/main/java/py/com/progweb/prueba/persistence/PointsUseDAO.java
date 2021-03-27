@@ -38,7 +38,7 @@ public class PointsUseDAO {
 
     public List<PointsUse> listByConceptAndDateAndClient(Long idConcept, Date useDate, Long idClient){
         Query q = this.entityManager.createQuery(
-                "select c from PointsUse c where c.useConcept.useConceptId = :idConcept and date(c.useDate)=:useDate and c.client.clientId=:clientId")
+                "select c from PointsUse c where c.useConcept.useConceptId = :idConcept or date(c.useDate)=:useDate or c.client.clientId=:clientId")
                 .setParameter("idConcept", idConcept)
                 .setParameter("useDate", useDate, TemporalType.DATE)
                 .setParameter("clientId", idClient);
