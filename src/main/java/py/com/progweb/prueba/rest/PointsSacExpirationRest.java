@@ -46,8 +46,8 @@ public class PointsSacExpirationRest {
     @Path("/")
     public Response crear(@QueryParam("bolsaId") Long id, PointsSacExpiration pointsSacExpiration) throws URISyntaxException {
         PointsSac pointsSac = this.pointsSacDAO.getPointsSac(id);
-        if(pointsSac == null){
-            return Response.status(404).build();
+        if(pointsSac == null || pointsSacExpiration.getExpirationDate()==null){
+            return Response.status(400).build();
         }
         pointsSacExpiration.setPointsSac(pointsSac);
         Long pid = pointsSacExpirationDAO.createPointsSacExpiration(pointsSacExpiration);
