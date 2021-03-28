@@ -23,7 +23,7 @@ public class SacsExpirationChecker {
     @Inject
     private PointsSacExpirationDAO pointsSacExpirationDAO;
 
-    @Schedule(hour = "*", minute = "*/2")
+    @Schedule(hour = "*", minute = "*/5")
     public void actualizeDatesAndDeletedExpiredSacs(){
         List<PointsSacExpiration> pointsSacExpirations = pointsSacExpirationDAO.getPointsSacExpirations();
         for(PointsSacExpiration pointsSacExpiration: pointsSacExpirations) {
@@ -40,17 +40,4 @@ public class SacsExpirationChecker {
             }
         }
     }
-
-    //@Schedule(hour = "*", minute = "*/3")
-    /*public void expirationCollector(){
-        List<PointsSacExpiration> pointsSacExpirations = pointsSacExpirationDAO.getPointsSacExpirations();
-        for(PointsSacExpiration pointsSacExpiration: pointsSacExpirations) {
-            Date current = new Date();
-            long difference = pointsSacExpiration.getExpirationDate().getTime() - current.getTime();
-            if (difference<0) {
-                pointsSacExpirationDAO.deletePointsSacExpiration(pointsSacExpiration);
-                System.out.println("vencimiento eliminado");
-            }
-        }
-    }*/
 }

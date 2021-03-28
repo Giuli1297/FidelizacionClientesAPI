@@ -1,5 +1,6 @@
 package py.com.progweb.prueba.persistence;
 
+import py.com.progweb.prueba.model.AssignRule;
 import py.com.progweb.prueba.model.Client;
 import py.com.progweb.prueba.model.PointsSac;
 import py.com.progweb.prueba.model.PointsSacExpiration;
@@ -20,6 +21,9 @@ public class PointsSacDAO {
 
     @Inject
     private PointsSacExpirationDAO pointsSacExpirationDAO;
+
+    @Inject
+    private AssignRuleDAO assignRuleDAO;
 
 
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
@@ -73,16 +77,28 @@ public class PointsSacDAO {
     }
 
     public Long calculatePoints(Double operationAmount) {
-        long points;
-        if (operationAmount <= 199999) {
-            operationAmount = operationAmount / 50000;
-            points = operationAmount.longValue();
-        } else if (operationAmount <= 499999) {
-            operationAmount = operationAmount / 30000;
-            points = operationAmount.longValue();
-        } else {
-            operationAmount = operationAmount / 20000;
-            points = operationAmount.longValue();
+        List<AssignRule> assignRules = assignRuleDAO.getAssignRules();
+        long points = 0;
+        if(assignRules.isEmpty()){
+            //default
+            if (operationAmount <= 199999) {
+                operationAmount = operationAmount / 50000;
+                points = operationAmount.longValue();
+            } else if (operationAmount <= 499999) {
+                operationAmount = operationAmount / 30000;
+                points = operationAmount.longValue();
+            } else {
+                operationAmount = operationAmount / 20000;
+                points = operationAmount.longValue();
+            }
+        }else{
+            for(AssignRule assignRule: assignRules){
+                if(operationAmount > assignRule.getLimInf()){
+                    operationAmount = operationAmount / assignRule.getEqAmount();
+                    points = operationAmount.longValue();
+                    break;
+                }
+            }
         }
         return points;
     }
