@@ -28,7 +28,7 @@ public class PointsSacExpiration {
     @Column(name = "duracion_dias")
     private Long dayDuration;
 
-    @OneToOne(optional = false, cascade = { CascadeType.REMOVE })
+    @OneToOne(optional = false)
     @JoinColumn(name = "bolsa_puntos_id")
     @JsonBackReference("vencimiento-bolsa")
     private PointsSac pointsSac;

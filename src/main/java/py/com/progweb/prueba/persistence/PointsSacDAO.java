@@ -47,7 +47,7 @@ public class PointsSacDAO {
 
     public List<PointsSac> listWhereClienteOrderByDate(Long client){
         Query q = this.entityManager
-                .createQuery("select c from PointsSac c where c.client.clientId = :client ORDER BY c.assignDate")
+                .createQuery("select c from PointsSac c where c.client.clientId = :client and c.balance > 0 and c.state = 'no-vencido' ORDER BY c.assignDate")
                 .setParameter("client", client);
         return (List<PointsSac>) q.getResultList();
     }

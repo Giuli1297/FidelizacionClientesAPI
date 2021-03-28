@@ -23,7 +23,7 @@ public class SacsExpirationChecker {
     @Inject
     private PointsSacExpirationDAO pointsSacExpirationDAO;
 
-    @Schedule(hour = "*/1")
+    @Schedule(hour = "*", minute = "*/2")
     public void actualizeDatesAndDeletedExpiredSacs(){
         List<PointsSacExpiration> pointsSacExpirations = pointsSacExpirationDAO.getPointsSacExpirations();
         for(PointsSacExpiration pointsSacExpiration: pointsSacExpirations) {
@@ -31,13 +31,26 @@ public class SacsExpirationChecker {
             long difference = pointsSacExpiration.getExpirationDate().getTime() - current.getTime();
             Long daysBetween = (Long) (difference / (1000 * 60 * 60 * 24));
             if (difference<0) {
+                pointsSacDAO.getPointsSac(pointsSacExpiration.getPointsSac().getSacId()).setState("vencido");
                 pointsSacExpirationDAO.deletePointsSacExpiration(pointsSacExpiration);
-                System.out.println("Se a eliminado la bolsa de puntos con id "
-                        + pointsSacExpiration.getPointsSacExpirationId()+" por vencimiento");
+                System.out.println("La bolsa con id "+pointsSacExpiration.getPointsSac().getSacId()+" ha vencido.");
             } else {
                 pointsSacExpiration.setDayDuration(daysBetween);
                 pointsSacExpirationDAO.updatePointsSacExpiration(pointsSacExpiration);
             }
         }
     }
+
+    //@Schedule(hour = "*", minute = "*/3")
+    /*public void expirationCollector(){
+        List<PointsSacExpiration> pointsSacExpirations = pointsSacExpirationDAO.getPointsSacExpirations();
+        for(PointsSacExpiration pointsSacExpiration: pointsSacExpirations) {
+            Date current = new Date();
+            long difference = pointsSacExpiration.getExpirationDate().getTime() - current.getTime();
+            if (difference<0) {
+                pointsSacExpirationDAO.deletePointsSacExpiration(pointsSacExpiration);
+                System.out.println("vencimiento eliminado");
+            }
+        }
+    }*/
 }

@@ -61,7 +61,7 @@ public class ConsultasRest {
             @QueryParam("cliente") Long clientId,
             @QueryParam("puntosRangoInf") Long rangInf,
             @QueryParam("puntosRangoSup") Long rangSup){
-        if(rangInf > rangSup){
+        if(rangInf > rangSup || rangInf==null || rangSup==null){
             return Response.status(400).build();
         }
         List<PointsSac> pointsSacList = pointsSacDAO.listByClientAndRange(clientId, rangInf, rangSup);

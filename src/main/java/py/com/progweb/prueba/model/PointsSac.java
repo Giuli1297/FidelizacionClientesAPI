@@ -38,6 +38,9 @@ public class PointsSac {
     @Column(name = "monto_operacion")
     private Double purchaseAmount;
 
+    @Column(name = "estado")
+    private String state;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "cliente_id")
     @JsonBackReference(value = "bolsa-cliente")
@@ -47,7 +50,7 @@ public class PointsSac {
     @JsonManagedReference(value="detalle-bolsa")
     private List<UseDetail> useDetailList = null;
 
-    @OneToOne(mappedBy = "pointsSac", cascade = { CascadeType.ALL })
+    @OneToOne(mappedBy = "pointsSac")
     @JsonManagedReference("vencimiento-bolsa")
     private PointsSacExpiration pointsSacExpiration;
 
@@ -59,7 +62,7 @@ public class PointsSac {
 
         Calendar c = Calendar.getInstance();
         c.setTime(today);
-        c.add(Calendar.MINUTE, 15);
+        c.add(Calendar.MINUTE, 1);
         Date expDate = c.getTime();
 
         this.expirationDate = expDate;
@@ -67,6 +70,7 @@ public class PointsSac {
             this.usedPoints=0L;
         }
         this.balance = this.assignedPoints - this.usedPoints;
+        this.state = "no-vencido";
     }
 
 }
