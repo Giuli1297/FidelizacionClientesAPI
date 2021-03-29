@@ -111,7 +111,7 @@ public class ServiciosRest {
                 break;
             }
         }
-        if(mail.equals("si")){
+        if(mail!=null){
             this.sendMail(client.getEmail(), pointsUse.getUseConcept().getDescription(), requiredPoints);
         }
         return Response.ok(pointsUseDAO.getPointsUse(pointsUseId)).build();
