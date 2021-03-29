@@ -5,11 +5,17 @@ import py.com.progweb.prueba.persistence.*;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriBuilder;
 import java.util.List;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 @Path("servicios")
@@ -52,7 +58,7 @@ public class ServiciosRest {
 
     @POST
     @Path("/canjear")
-    public Response canjear(@QueryParam("clienteId") Long clienteId, @QueryParam("conceptoId") Long conceptoId){
+    public Response canjear(@QueryParam("clienteId") Long clienteId, @QueryParam("conceptoId") Long conceptoId, @QueryParam("mail") String mail) throws MessagingException {
         UseConcept concept = useConceptDAO.getUseConcept(conceptoId);
         Client client = clientDAO.getClient(clienteId);
         if(client==null || concept == null){
@@ -105,7 +111,40 @@ public class ServiciosRest {
                 break;
             }
         }
+        if(mail.equals("si")){
+            this.sendMail(client.getEmail(), pointsUse.getUseConcept().getDescription(), requiredPoints);
+        }
         return Response.ok(pointsUseDAO.getPointsUse(pointsUseId)).build();
+    }
+
+    private void sendMail(String receipient, String concept, Long points) throws MessagingException {
+        Properties properties = System.getProperties();
+        properties.put("mail.smtp.host", "smtp.gmail.com");
+        properties.put("mail.smtp.port","587");
+        properties.put("mail.smtp.auth","true");
+        properties.put("mail.smtp.starttls.enable","true");
+        Session newSession = Session.getDefaultInstance(properties, null);
+
+        String emailReceipient = receipient;
+        String emailSubject = "Canjeo de Puntos";
+        String emailBody = "Has usado "+ points + " puntos para canjear \n"+
+                concept + ".";
+
+        MimeMessage mimeMessage = new MimeMessage(newSession);
+        mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(emailReceipient));
+        mimeMessage.setSubject(emailSubject);
+        MimeMultipart multipart = new MimeMultipart();
+
+        MimeBodyPart bodyPart = new MimeBodyPart();
+        bodyPart.setContent(emailBody, "text/html; charset=UTF-8");
+        multipart.addBodyPart(bodyPart);
+        mimeMessage.setContent(multipart);;
+
+        String emailHost = "smtp.gmail.com";
+        Transport transport = newSession.getTransport("smtp");
+        transport.connect("giul1297.g@gmail.com", "ccp191231");
+        transport.sendMessage(mimeMessage,mimeMessage.getAllRecipients());
+        transport.close();
     }
 
 }

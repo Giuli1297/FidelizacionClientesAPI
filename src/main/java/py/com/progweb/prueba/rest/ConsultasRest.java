@@ -47,8 +47,10 @@ public class ConsultasRest {
         SimpleDateFormat myFormat = new SimpleDateFormat("dd-MM-yyyy");
         Date fecha = null;
         try {
-            fecha = myFormat.parse(fechaUso);
-        } catch (ParseException e) {
+            if(fechaUso!=null){
+                fecha = myFormat.parse(fechaUso);
+            }
+        } catch (Exception e) {
             return Response.status(400).build();
         }
         List<PointsUse> pointsUseList = pointsUseDAO.listByConceptAndDateAndClient(idConcepto, fecha, idCliente);
@@ -94,7 +96,9 @@ public class ConsultasRest {
         SimpleDateFormat myFormat = new SimpleDateFormat("dd-MM-yyyy");
         Date fecha = null;
         try {
-            fecha = myFormat.parse(birthday);
+            if(birthday!=null){
+                fecha = myFormat.parse(birthday);
+            }
         } catch (ParseException e) {
             return Response.status(400).build();
         }

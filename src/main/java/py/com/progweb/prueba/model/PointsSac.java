@@ -62,7 +62,7 @@ public class PointsSac {
 
         Calendar c = Calendar.getInstance();
         c.setTime(today);
-        c.add(Calendar.MINUTE, 1);
+        c.add(Calendar.HOUR, 48);
         Date expDate = c.getTime();
 
         this.expirationDate = expDate;

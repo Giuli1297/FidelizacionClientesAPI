@@ -41,11 +41,19 @@ public class ClientDAO {
     }
 
     public List<Client> listByNameOrLastnameOrBirthday(String name, String lastname, Date birthday){
-        Query q = this.entityManager.createQuery(
-                "select c from Client c where c.name = :name or c.lastName = :lastName or c.birthday = :birthday")
-                .setParameter("name", name)
-                .setParameter("lastName", lastname)
-                .setParameter("birthday", birthday, TemporalType.DATE);
+        Query q;
+        if(birthday==null){
+            q = this.entityManager.createQuery(
+                    "select c from Client c where c.name LIKE :name or c.lastName = :lastName")
+                    .setParameter("name", name+"%")
+                    .setParameter("lastName", lastname+"%");
+        }else{
+            q = this.entityManager.createQuery(
+                    "select c from Client c where c.name LIKE :name or c.lastName = :lastName or c.birthday = :birthday")
+                    .setParameter("name", name+"%")
+                    .setParameter("lastName", lastname+"%")
+                    .setParameter("birthday", birthday, TemporalType.DATE);
+        }
         return (List<Client>) q.getResultList();
     }
 
