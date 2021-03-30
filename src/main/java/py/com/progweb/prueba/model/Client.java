@@ -43,11 +43,11 @@ public class Client {
     @Temporal(TemporalType.DATE)
     private Date birthday;
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "client", cascade = {CascadeType.ALL})
     @JsonManagedReference(value="bolsa-cliente")
     private List<PointsSac> pointsSacList = null;
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "client", cascade = {CascadeType.ALL})
     @JsonManagedReference(value = "usodepuntos-cliente")
     private List<PointsUse> pointsUseList = null;
 

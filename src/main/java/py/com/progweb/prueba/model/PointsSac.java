@@ -46,11 +46,11 @@ public class PointsSac {
     @JsonBackReference(value = "bolsa-cliente")
     private Client client;
 
-    @OneToMany(mappedBy = "pointsSac")
+    @OneToMany(mappedBy = "pointsSac", cascade = {CascadeType.ALL})
     @JsonManagedReference(value="detalle-bolsa")
     private List<UseDetail> useDetailList = null;
 
-    @OneToOne(mappedBy = "pointsSac")
+    @OneToOne(mappedBy = "pointsSac", cascade = {CascadeType.ALL})
     @JsonManagedReference("vencimiento-bolsa")
     private PointsSacExpiration pointsSacExpiration;
 

@@ -58,7 +58,7 @@ public class ServiciosRest {
 
     @POST
     @Path("/canjear")
-    public Response canjear(@QueryParam("clienteId") Long clienteId, @QueryParam("conceptoId") Long conceptoId, @QueryParam("mail") String mail) throws MessagingException {
+    public Response canjear(@QueryParam("clienteId") Long clienteId, @QueryParam("conceptoId") Long conceptoId, @QueryParam("mail") String mail) {
         UseConcept concept = useConceptDAO.getUseConcept(conceptoId);
         Client client = clientDAO.getClient(clienteId);
         if(client==null || concept == null){
@@ -112,7 +112,12 @@ public class ServiciosRest {
             }
         }
         if(mail!=null){
-            this.sendMail(client.getEmail(), pointsUse.getUseConcept().getDescription(), requiredPoints);
+            try {
+                this.sendMail(client.getEmail(), pointsUse.getUseConcept().getDescription(), requiredPoints);
+            } catch (MessagingException e) {
+                System.out.println("Email invalido "+client.getEmail());
+                return Response.status(400).build();
+            }
         }
         return Response.ok(pointsUseDAO.getPointsUse(pointsUseId)).build();
     }

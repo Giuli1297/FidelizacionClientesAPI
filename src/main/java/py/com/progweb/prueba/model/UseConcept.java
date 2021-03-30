@@ -22,7 +22,7 @@ public class UseConcept {
     @Column(name = "puntos_requeridos")
     private Long requiredPoints;
 
-    @OneToMany(mappedBy = "useConcept")
+    @OneToMany(mappedBy = "useConcept", cascade = {CascadeType.ALL})
     @JsonManagedReference(value = "usodepuntos-conceptodeuso")
     private List<PointsUse> pointsUseList = null;
 }

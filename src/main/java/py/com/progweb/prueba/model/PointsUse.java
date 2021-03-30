@@ -34,7 +34,7 @@ public class PointsUse {
     @JsonBackReference(value = "usodepuntos-conceptodeuso")
     private UseConcept useConcept;
 
-    @OneToMany(mappedBy = "pointsUse")
+    @OneToMany(mappedBy = "pointsUse", cascade = {CascadeType.ALL})
     @JsonManagedReference(value = "detalle-usodepuntos")
     private List<UseDetail> useDetailList = null;
 
