@@ -50,7 +50,7 @@ public class PointsSac {
     @JsonManagedReference(value="detalle-bolsa")
     private List<UseDetail> useDetailList = null;
 
-    @OneToOne(mappedBy = "pointsSac", cascade = {CascadeType.ALL})
+    @OneToOne(mappedBy = "pointsSac", orphanRemoval = true)
     @JsonManagedReference("vencimiento-bolsa")
     private PointsSacExpiration pointsSacExpiration;
 

@@ -29,6 +29,8 @@ public class PointsSacExpirationDAO {
 
     public void updatePointsSacExpiration(PointsSacExpiration pointsSacExpiration){
         if(entityManager.find(PointsSacExpiration.class, pointsSacExpiration.getPointsSacExpirationId()) != null){
+            PointsSacExpiration pointsSacExpiration1 = this.getPointsSacExpiration(pointsSacExpiration.getPointsSacExpirationId());
+            pointsSacExpiration.setPointsSac(pointsSacExpiration1.getPointsSac());
             entityManager.merge(pointsSacExpiration);
         }
     }
